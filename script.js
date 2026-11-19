@@ -1291,8 +1291,126 @@ function bindEvents() {
     });
 }
 
+// ==========================================================================
+// Fix: Clear Stuck Iframe Focus / Hover State on Window Switch
+// ==========================================================================
+function bindPlayerFocusReset() {
+    let wasWindowLeft = false;
+    let returnPollTimer = null;
+    let resetDelayTimer = null;
+    let pointerRestoreTimer = null;
+
+    function isPlayerActive() {
+        const frame = document.getElementById('videoFrame');
+        return state.activeView === 'detail' && Boolean(frame && frame.getAttribute('src'));
+    }
+
+    function clearTimers() {
+        if (returnPollTimer) {
+            clearInterval(returnPollTimer);
+            returnPollTimer = null;
+        }
+        if (resetDelayTimer) {
+            clearTimeout(resetDelayTimer);
+            resetDelayTimer = null;
+        }
+    }
+
+    function blurVideoFrame() {
+        const frame = document.getElementById('videoFrame');
+        const stage = document.getElementById('videoStage');
+        if (!frame) return;
+
+        if (document.activeElement === frame) {
+            frame.blur();
+            if (stage && !document.fullscreenElement) {
+                stage.focus({ preventScroll: true });
+                stage.blur();
+            }
+        }
+    }
+
+    function pulseIframePointerReset() {
+        const frame = document.getElementById('videoFrame');
+        if (!frame || !isPlayerActive()) return;
+
+        blurVideoFrame();
+
+        // Briefly toggle pointer-events so the browser dispatches a clean mouseleave
+        // into the cross-origin player iframe, allowing its progress bar to auto-hide.
+        if (pointerRestoreTimer) {
+            clearTimeout(pointerRestoreTimer);
+        }
+        frame.classList.add('iframe-pointer-reset');
+        pointerRestoreTimer = setTimeout(() => {
+            frame.classList.remove('iframe-pointer-reset');
+            pointerRestoreTimer = null;
+        }, 60);
+    }
+
+    function handleWindowReturn() {
+        if (!wasWindowLeft) return;
+        wasWindowLeft = false;
+        clearTimers();
+
+        if (!isPlayerActive()) return;
+
+        // Short grace delay so an intentional click used to refocus the window lands first.
+        resetDelayTimer = setTimeout(() => {
+            resetDelayTimer = null;
+            if (!document.hidden && document.hasFocus()) {
+                pulseIframePointerReset();
+            }
+        }, 160);
+    }
+
+    function markWindowLeft() {
+        if (!isPlayerActive()) return;
+        wasWindowLeft = true;
+        blurVideoFrame();
+
+        // Fallback watcher in case returning directly to a focused cross-origin iframe
+        // does not fire the parent window's focus event on some browsers/OSes.
+        if (!returnPollTimer) {
+            returnPollTimer = setInterval(() => {
+                if (!isPlayerActive()) {
+                    wasWindowLeft = false;
+                    clearTimers();
+                    return;
+                }
+                if (!document.hidden && document.hasFocus()) {
+                    handleWindowReturn();
+                }
+            }, 300);
+        }
+    }
+
+    window.addEventListener('blur', () => {
+        // Clicking inside the iframe also fires window.blur while document.hasFocus() stays true.
+        // Defer one tick to distinguish an actual OS window switch from an iframe click.
+        setTimeout(() => {
+            if (!document.hasFocus()) {
+                markWindowLeft();
+            }
+        }, 0);
+    });
+
+    window.addEventListener('focus', () => {
+        handleWindowReturn();
+    });
+
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+            markWindowLeft();
+        } else {
+            handleWindowReturn();
+        }
+    });
+}
+
 window.addEventListener('DOMContentLoaded', () => {
     loadUserData();
     bindEvents();
+    bindPlayerFocusReset();
     loadHomeMovies(true);
 });

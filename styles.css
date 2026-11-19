@@ -1439,10 +1439,18 @@ body.lights-off .player-section {
     background: #05070b;
 }
 
+.video-stage:focus {
+    outline: none;
+}
+
 .video-stage iframe {
     width: 100%;
     height: 100%;
     display: block;
+}
+
+.video-stage iframe.iframe-pointer-reset {
+    pointer-events: none !important;
 }
 
 .player-placeholder {
