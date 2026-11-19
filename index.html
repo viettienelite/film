@@ -1,58 +1,341 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <link rel="icon" type="image/png" href="film.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Phim Mới</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <title>Vtkjbtlvkh Cinema — Phim Mới Cập Nhật</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <header>
-        <div class="top-container">
-            <div class="logo" onclick="goToHome()">Vtkjbtlvkh</div>
-            <div class="search-box">
-                <button onclick="searchMovies()"><i class="fas fa-search"></i></button>
-                <input type="text" id="searchInput" placeholder="Tìm kiếm phim..." onkeypress="if(event.key === 'Enter') searchMovies()">
+    <!-- Ambient Background Glow -->
+    <div class="ambient-bg" aria-hidden="true">
+        <div class="ambient-orb orb-1"></div>
+        <div class="ambient-orb orb-2"></div>
+    </div>
+
+    <!-- Cinema Lights-Off Backdrop -->
+    <div id="theaterBackdrop" class="theater-backdrop" aria-hidden="true"></div>
+
+    <!-- Navigation Header -->
+    <header id="mainHeader" class="site-header">
+        <div class="nav-container">
+            <div class="nav-left">
+                <button type="button" class="brand-logo" id="logoBtn" aria-label="Trang chủ Vtkjbtlvkh">
+                    <span class="brand-icon"><i class="fas fa-film"></i></span>
+                    <span class="brand-text">Vtkjbtlvkh</span>
+                    <span class="brand-tag">HD</span>
+                </button>
+                <nav class="nav-links" aria-label="Điều hướng chính">
+                    <button type="button" class="nav-pill active" id="navHomeBtn" data-view="home">
+                        <i class="fas fa-compass"></i>
+                        <span>Khám phá</span>
+                    </button>
+                    <button type="button" class="nav-pill" id="navFavBtn" data-view="favorites">
+                        <i class="fas fa-bookmark"></i>
+                        <span>Yêu thích</span>
+                        <span class="nav-badge" id="favCountBadge">0</span>
+                    </button>
+                    <button type="button" class="nav-pill" id="navHistoryBtn" data-view="history">
+                        <i class="fas fa-clock-rotate-left"></i>
+                        <span>Lịch sử</span>
+                        <span class="nav-badge" id="historyCountBadge">0</span>
+                    </button>
+                </nav>
+            </div>
+
+            <div class="nav-right">
+                <form class="search-bar" id="searchForm" role="search">
+                    <button type="submit" class="search-submit" aria-label="Tìm kiếm">
+                        <i class="fas fa-magnifying-glass"></i>
+                    </button>
+                    <input
+                        type="text"
+                        id="searchInput"
+                        placeholder="Tìm tên phim, diễn viên..."
+                        autocomplete="off"
+                        aria-label="Tìm kiếm phim"
+                    >
+                    <button type="button" class="search-clear" id="searchClearBtn" aria-label="Xóa từ khóa" hidden>
+                        <i class="fas fa-xmark"></i>
+                    </button>
+                    <kbd class="search-kbd" aria-hidden="true">/</kbd>
+                </form>
             </div>
         </div>
     </header>
-    <main>
-        <div id="movieList">
-            <h2 id="movieListTitle">Phim Mới Cập Nhật</h2>
-            <div id="movieContainer"></div>
-        </div>
-        <div id="movieDetail" style="display: none;">
-            <button class="back-button" onclick="goBack()"><i class="fas fa-arrow-left"></i> Quay lại</button>
-            <div class="movie-header">
-                <div id="movieInfo">
-                    <div class="poster-container">
-                        <img src="" alt="">
-                    </div>
-                    <div class="details-container">
-                        <h1></h1>
-                        <div class="detail-item"><i class="fas fa-film"></i><span><span class="label">Tên gốc:</span> <span class="value"></span></span></div>
-                        <div class="detail-item"><i class="fas fa-list-ul"></i><span><span class="label">Định dạng:</span> <span class="value"></span></span></div>
-                        <div class="detail-item"><i class="fas fa-tags"></i><span><span class="label">Thể loại:</span> <span class="value"></span></span></div>
-                        <div class="detail-item"><i class="fas fa-globe"></i><span><span class="label">Quốc gia:</span> <span class="value"></span></span></div>
-                        <div class="detail-item"><i class="fas fa-calendar-alt"></i><span><span class="label">Năm:</span> <span class="value"></span></span></div>
-                        <div class="detail-item"><i class="fas fa-list-ol"></i><span><span class="label">Tập hiện tại:</span> <span class="value"></span></span></div>
-                        <div class="detail-item"><i class="fas fa-clock"></i><span><span class="label">Thời lượng:</span> <span class="value"></span></span></div>
-                        <div class="detail-item"><i class="fas fa-star"></i><span><span class="label">Chất lượng:</span> <span class="value"></span></span></div>
-                        <div class="detail-item"><i class="fas fa-language"></i><span><span class="label">Ngôn ngữ:</span> <span class="value"></span></span></div>
-                        <div class="detail-item"><i class="fas fa-user-tie"></i><span><span class="label">Đạo diễn:</span> <span class="value"></span></span></div>
-                        <div class="detail-item"><i class="fas fa-users"></i><span><span class="label">Diễn viên:</span> <span class="value"></span></span></div>
+
+    <!-- Main Content -->
+    <main class="main-shell">
+        <!-- HOME / CATALOG VIEW -->
+        <section id="movieListView" class="view-section active">
+            <!-- Hero Spotlight Carousel -->
+            <div id="heroSection" class="hero-spotlight">
+                <div class="hero-backdrop-layer" id="heroBackdrop"></div>
+                <div class="hero-vignette"></div>
+                <div class="hero-content" id="heroContent">
+                    <div class="hero-skeleton">
+                        <div class="skeleton-pill"></div>
+                        <div class="skeleton-title"></div>
+                        <div class="skeleton-line"></div>
+                        <div class="skeleton-btns"></div>
                     </div>
                 </div>
-                <div class="description"></div>
+                <div class="hero-controls">
+                    <button type="button" class="hero-nav-btn" id="heroPrevBtn" aria-label="Phim nổi bật trước">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <div class="hero-dots" id="heroDots"></div>
+                    <button type="button" class="hero-nav-btn" id="heroNextBtn" aria-label="Phim nổi bật tiếp">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
             </div>
-            <div id="episodeList"></div>
-            <div id="videoPlayer">
-                <iframe id="videoFrame" src="" frameborder="0" allowfullscreen></iframe>
+
+            <!-- Continue Watching Shelf (auto-shown when user has history) -->
+            <section id="continueShelf" class="shelf-section" hidden>
+                <div class="section-header">
+                    <div class="section-title-group">
+                        <span class="title-accent"></span>
+                        <h2>Tiếp Tục Xem</h2>
+                    </div>
+                    <button type="button" class="text-action-btn" id="clearHistoryQuickBtn">
+                        <i class="fas fa-trash-can"></i> Xóa lịch sử
+                    </button>
+                </div>
+                <div id="continueContainer" class="continue-rail"></div>
+            </section>
+
+            <!-- Main Movie Grid Section -->
+            <section class="catalog-section">
+                <div class="section-header catalog-header">
+                    <div class="section-title-group">
+                        <span class="title-accent"></span>
+                        <h2 id="movieListTitle">Phim Mới Cập Nhật</h2>
+                        <span class="result-pill" id="resultCountPill">Đang tải...</span>
+                    </div>
+
+                    <div class="catalog-tools">
+                        <button type="button" class="season-group-toggle active" id="groupSeasonsBtn" title="Gom các phần/mùa cùng bộ anime thành một thẻ">
+                            <i class="fas fa-layer-group"></i>
+                            <span>Gom theo mùa</span>
+                        </button>
+                        <div class="filter-group" role="group" aria-label="Sắp xếp phim">
+                            <button type="button" class="chip-btn active" data-sort="default">Mặc định</button>
+                            <button type="button" class="chip-btn" data-sort="az">A–Z</button>
+                            <button type="button" class="chip-btn" data-sort="za">Z–A</button>
+                        </div>
+                        <div class="density-toggle" role="group" aria-label="Kiểu lưới">
+                            <button type="button" class="icon-toggle active" id="gridNormalBtn" title="Lưới chuẩn" aria-label="Lưới chuẩn">
+                                <i class="fas fa-grip"></i>
+                            </button>
+                            <button type="button" class="icon-toggle" id="gridCompactBtn" title="Lưới thu gọn" aria-label="Lưới thu gọn">
+                                <i class="fas fa-border-all"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Error / Status Banner -->
+                <div id="statusBanner" class="status-banner" hidden>
+                    <div class="status-banner-icon"><i class="fas fa-wifi"></i></div>
+                    <div class="status-banner-body">
+                        <h3 id="statusBannerTitle">Không thể kết nối nguồn phim</h3>
+                        <p id="statusBannerDesc">Kiểm tra lại kết nối mạng hoặc thử tải lại sau vài giây.</p>
+                    </div>
+                    <button type="button" class="btn-primary" id="retryFetchBtn">
+                        <i class="fas fa-rotate-right"></i> Thử lại
+                    </button>
+                </div>
+
+                <!-- Movie Cards Grid -->
+                <div id="movieContainer" class="movie-grid"></div>
+
+                <!-- Load More Footer -->
+                <div id="loadMoreWrap" class="load-more-wrap" hidden>
+                    <button type="button" class="btn-load-more" id="loadMoreBtn">
+                        <span class="btn-label">Tải thêm phim</span>
+                        <i class="fas fa-angles-down"></i>
+                    </button>
+                </div>
+            </section>
+        </section>
+
+        <!-- MOVIE DETAIL & PLAYER VIEW -->
+        <section id="movieDetailView" class="view-section" hidden>
+            <div class="detail-topbar">
+                <button type="button" class="btn-glass" id="backBtn">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Quay lại</span>
+                </button>
+                <div class="detail-topbar-actions">
+                    <button type="button" class="btn-glass" id="detailFavBtn">
+                        <i class="far fa-bookmark"></i>
+                        <span>Yêu thích</span>
+                    </button>
+                    <button type="button" class="btn-glass" id="detailShareBtn">
+                        <i class="fas fa-share-nodes"></i>
+                        <span>Chia sẻ</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Movie Detail Loading Skeleton -->
+            <div id="detailSkeleton" class="detail-skeleton" hidden>
+                <div class="skeleton-poster"></div>
+                <div class="skeleton-info">
+                    <div class="skeleton-title"></div>
+                    <div class="skeleton-line"></div>
+                    <div class="skeleton-line short"></div>
+                    <div class="skeleton-line"></div>
+                </div>
+            </div>
+
+            <!-- Actual Movie Detail Content -->
+            <div id="detailContent" hidden>
+                <!-- Cinematic Backdrop Header -->
+                <div class="movie-hero-card" id="movieHeroCard">
+                    <div class="movie-hero-bg" id="movieHeroBg"></div>
+                    <div class="movie-hero-overlay"></div>
+
+                    <div class="movie-hero-inner">
+                        <div class="detail-poster-wrap">
+                            <img id="detailPoster" src="" alt="Poster phim">
+                            <span class="poster-quality-badge" id="detailQualityBadge">HD</span>
+                        </div>
+
+                        <div class="detail-meta-col">
+                            <div class="detail-badges" id="detailBadges"></div>
+                            <h1 id="detailTitle"></h1>
+                            <p class="detail-original-name" id="detailOriginalName"></p>
+
+                            <div class="detail-cta-row">
+                                <button type="button" class="btn-primary btn-glow" id="watchNowBtn">
+                                    <i class="fas fa-play"></i>
+                                    <span>Xem Ngay</span>
+                                </button>
+                                <button type="button" class="btn-glass" id="scrollEpisodesBtn">
+                                    <i class="fas fa-list-ol"></i>
+                                    <span>Danh sách tập</span>
+                                </button>
+                            </div>
+
+                            <div class="detail-synopsis-box">
+                                <p id="detailDescription" class="detail-description clamped"></p>
+                                <button type="button" class="synopsis-toggle" id="synopsisToggleBtn" hidden>
+                                    Xem thêm <i class="fas fa-chevron-down"></i>
+                                </button>
+                            </div>
+
+                            <div class="meta-grid" id="metaGrid"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Related Seasons Switcher (auto-shown when franchise has multiple seasons) -->
+                <section id="seasonsSection" class="seasons-section" hidden>
+                    <div class="seasons-header">
+                        <div class="section-title-group">
+                            <span class="title-accent"></span>
+                            <h2>Các Mùa / Phần</h2>
+                            <span class="result-pill" id="seasonCountPill">0 mùa</span>
+                        </div>
+                    </div>
+                    <div id="seasonsList" class="seasons-rail"></div>
+                </section>
+
+                <!-- Video Player Theater Section -->
+                <section id="playerSection" class="player-section">
+                    <div class="player-header">
+                        <div class="player-now-playing">
+                            <span class="live-dot"></span>
+                            <span id="nowPlayingLabel">Chưa chọn tập</span>
+                        </div>
+                        <div class="player-controls-bar">
+                            <button type="button" class="btn-control" id="prevEpBtn" disabled>
+                                <i class="fas fa-backward-step"></i>
+                                <span>Tập trước</span>
+                            </button>
+                            <button type="button" class="btn-control" id="nextEpBtn" disabled>
+                                <span>Tập tiếp</span>
+                                <i class="fas fa-forward-step"></i>
+                            </button>
+                            <button type="button" class="btn-control" id="reloadPlayerBtn" title="Tải lại trình phát">
+                                <i class="fas fa-rotate"></i>
+                                <span>Tải lại</span>
+                            </button>
+                            <button type="button" class="btn-control" id="lightsOffBtn">
+                                <i class="fas fa-moon"></i>
+                                <span>Tắt đèn</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="video-stage" id="videoStage">
+                        <iframe
+                            id="videoFrame"
+                            src=""
+                            frameborder="0"
+                            allowfullscreen
+                            allow="autoplay; fullscreen; picture-in-picture"
+                            title="Trình phát phim"
+                        ></iframe>
+                        <div id="playerPlaceholder" class="player-placeholder">
+                            <i class="fas fa-circle-play"></i>
+                            <p>Chọn một tập bên dưới để bắt đầu xem phim</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Server Tabs & Episode Selector -->
+                <section id="episodesSection" class="episodes-section">
+                    <div class="episodes-header">
+                        <div class="section-title-group">
+                            <span class="title-accent"></span>
+                            <h2>Danh Sách Tập</h2>
+                            <span class="result-pill" id="episodeCountPill">0 tập</span>
+                        </div>
+
+                        <div class="episodes-tools">
+                            <div id="serverTabs" class="server-tabs" role="tablist"></div>
+                            <div class="ep-search-wrap" id="epSearchWrap" hidden>
+                                <i class="fas fa-filter"></i>
+                                <input type="text" id="epSearchInput" placeholder="Tìm tập..." aria-label="Lọc tập phim">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="episodeList" class="episode-grid"></div>
+                </section>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <div class="footer-brand">
+                <span class="brand-text">Vtkjbtlvkh</span>
+                <p>Giao diện xem phim tốc độ cao — Dữ liệu tổng hợp qua API công khai từ phim.nguonc.com.</p>
+            </div>
+            <div class="footer-hints">
+                <span><kbd>/</kbd> Tìm nhanh</span>
+                <span><kbd>Esc</kbd> Quay lại / Bật đèn</span>
             </div>
         </div>
-    </main>
+    </footer>
+
+    <!-- Back to Top Button -->
+    <button type="button" id="scrollTopBtn" class="scroll-top-btn" aria-label="Lên đầu trang" hidden>
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+
     <script src="script.js"></script>
 </body>
 </html>
